@@ -4,7 +4,7 @@ from game.game_simulator import GameSimulator
 
 class StacSimulator(GameSimulator):
 
-    def __init__(self, player1: StacPlayer, player2: StacPlayer, dimension: int):
+    def __init__(self, player1: StacPlayer, player2: StacPlayer, dimension: int = 5):
         super(StacSimulator, self).__init__([player1, player2])
         """
         the number of rows and cols from the TicTacToe grid
