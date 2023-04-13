@@ -16,13 +16,13 @@ def cell_to_str(val):
 class StacState(State):
     EMPTY_CELL = -1
 
-    def __init__(self, dimension: int):
+    def __init__(self, dimension: int = 5):
         super().__init__()
         num_rows: int
         num_cols: int
 
-        if dimension < 3:
-            raise Exception("the dimension of the board must be 3 or over")
+        if dimension < 5:
+            raise Exception("the dimension of the board must be 5")
         """
         the dimensions of the board
         """
