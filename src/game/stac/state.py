@@ -31,7 +31,7 @@ class StacState(State):
         """
         the grid
         """
-        self.__grid = [[TicTacToeState.EMPTY_CELL for _i in range(self.__num_cols)] for _j in range(self.__num_rows)]
+        self.__grid = [[StacState.EMPTY_CELL for _i in range(self.__num_cols)] for _j in range(self.__num_rows)]
         """
         counts the number of turns in the current game
         """
@@ -144,7 +144,7 @@ class StacState(State):
     def get_num_players(self):
         return 2
 
-    def validate_action(self, action: TicTacToeAction) -> bool:
+    def validate_action(self, action: StacAction) -> bool:
         col = action.get_col()
         row = action.get_row()
 
@@ -156,12 +156,12 @@ class StacState(State):
             return False
 
         # full column / line
-        if self.__grid[row][col] != TicTacToeState.EMPTY_CELL:
+        if self.__grid[row][col] != StacState.EMPTY_CELL:
             return False
 
         return True
 
-    def update(self, action: TicTacToeAction):
+    def update(self, action: StacAction):
         col = action.get_col()
         row = action.get_row()
 
@@ -184,7 +184,7 @@ class StacState(State):
         print({
                   0: 'X',
                   1: 'O',
-                  TicTacToeState.EMPTY_CELL: ' '
+                  StacState.EMPTY_CELL: ' '
               }[self.__grid[row][col]], end="")
 
     def __display_numbers(self):
@@ -218,7 +218,7 @@ class StacState(State):
         return self.__acting_player
 
     def clone(self):
-        cloned_state = TicTacToeState(self.__num_cols)
+        cloned_state = StacState(self.__num_cols)
         cloned_state.__turns_count = self.__turns_count
         cloned_state.__acting_player = self.__acting_player
         cloned_state.__has_winner = self.__has_winner
@@ -227,12 +227,12 @@ class StacState(State):
                 cloned_state.__grid[row][col] = self.__grid[row][col]
         return cloned_state
 
-    def get_result(self, pos) -> Optional[TicTacToeResult]:
+    def get_result(self, pos) -> Optional[StacResult]:
         if self.__end_game:
             if self.__has_winner:
-                return TicTacToeResult.LOOSE if not (pos == self.__winner) else TicTacToeResult.WIN
+                return StacResult.LOOSE if not (pos == self.__winner) else StacResult.WIN
             else:
-                return TicTacToeResult.DRAW
+                return StacResult.DRAW
         return None
 
     def get_num_rows(self):
@@ -248,7 +248,7 @@ class StacState(State):
         return list(filter(
             lambda action: self.validate_action(action),
             map(
-                lambda row_col: TicTacToeAction(row_col[0], row_col[1]),
+                lambda row_col: StacAction(row_col[0], row_col[1]),
                 [(row, col) for row in range(self.get_num_rows()) for col in range(self.get_num_cols())]
             )
         ))
