@@ -1,6 +1,7 @@
 from game.game_simulator import GameSimulator
 from game.stac.simulator import StacSimulator
 from game.stac.state import StacState
+from game.stac.players.human import HumanStacPlayer
 
 
 def run_simulation(desc: str, simulator: GameSimulator, iterations: int, board_dimension: int):
@@ -21,9 +22,9 @@ def main():
     board_dimension = 5
 
     sim ={
-            "name": "TicTacToe - Offensive VS MinimaxV2",
-            "player1": ("Offensive"),
-            "player2": ("Defensive")
+            "name": "TicTacToe - TESTE VS TESTE",
+            "player1": HumanStacPlayer("TESTE1"),
+            "player2": HumanStacPlayer("TESTE2")
         }
 
     run_simulation(sim["name"], StacSimulator(sim["player1"], sim["player2"], board_dimension), num_iterations,
