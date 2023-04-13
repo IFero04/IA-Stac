@@ -22,7 +22,7 @@ class StacState(State):
         num_cols: int
 
         if dimension < 5:
-            raise Exception("the dimension of the board must be 5 or over")
+            raise Exception("the dimension of the board must be 5")
         """
         the dimensions of the board
         """
