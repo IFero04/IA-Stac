@@ -20,21 +20,21 @@ class State(ABC):
         pass
 
     """
-    Updates the game state with an action (if valid, check validate_action)
+    Updates the games state with an action (if valid, check validate_action)
     """
     @abstractmethod
     def update(self, action):
         pass
 
     """
-    Prints the game state to the console
+    Prints the games state to the console
     """
     @abstractmethod
     def display(self):
         pass
 
     """
-    Returns true if the game state is final
+    Returns true if the games state is final
     """
     @abstractmethod
     def is_finished(self) -> bool:
@@ -59,14 +59,14 @@ class State(ABC):
         return True
 
     """
-    copies the current game state
+    copies the current games state
     """
     def clone(self):
         pass
 
     """
-    Retrieves the game result for a player in a given position
-    :param pos: position of the player in the game [0, num_players[
+    Retrieves the games result for a player in a given position
+    :param pos: position of the player in the games [0, num_players[
     """
     @abstractmethod
     def get_result(self, pos):

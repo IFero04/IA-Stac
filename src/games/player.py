@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from game.state import State
+from games.state import State
 
 
 class Player(ABC):
@@ -12,8 +12,8 @@ class Player(ABC):
         # name of the player
         self.__name = name
 
-        # index of the current position of the player in the game
-        # in most game, the first player takes the position 0
+        # index of the current position of the player in the games
+        # in most games, the first player takes the position 0
         self.__current_pos = None
 
     """
@@ -43,15 +43,15 @@ class Player(ABC):
         pass
 
     """
-    Method that returns an action for a certain game state
-    :param state: the current game state
+    Method that returns an action for a certain games state
+    :param state: the current games state
     """
     @abstractmethod
     def get_action(self, state):
         pass
 
     """
-    A method that is invoked once a new game starts
+    A method that is invoked once a new games starts
     """
     @abstractmethod
     def event_new_game(self):
@@ -61,14 +61,14 @@ class Player(ABC):
     A method that notifies the player that someone did a certain action. This can be used to log opponents actions
     :param pos: the position of the player that performed the action
     :param action: the action that was performed
-    :param new_state: the resulting game state
+    :param new_state: the resulting games state
     """
     @abstractmethod
     def event_action(self, pos: int, action, new_state: State):
         pass
 
     """
-    A method that notifies the player of a game result of a given player
+    A method that notifies the player of a games result of a given player
     :param pos: the position of the player that got the result
     :param result: the result of the player
     """
@@ -77,8 +77,8 @@ class Player(ABC):
         pass
 
     """
-    A method that notifies the player that a game has ended
-    :param final_state: the final state of the game
+    A method that notifies the player that a games has ended
+    :param final_state: the final state of the games
     """
     @abstractmethod
     def event_end_game(self, final_state: State):

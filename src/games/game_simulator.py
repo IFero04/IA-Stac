@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from game.player import Player
-from game.state import State
+from games.player import Player
+from games.state import State
 
 
 class GameSimulator(ABC):
@@ -15,12 +15,12 @@ class GameSimulator(ABC):
 
         self.heap_permutation(players, len(players))
 
-        # the selected permutation for the current game
+        # the selected permutation for the current games
         self.__current_permutation = 0
 
     """
     Adapted from https://www.geeksforgeeks.org/heaps-algorithm-for-generating-permutations/
-    It allows for generating all possible permutations of seats in a game
+    It allows for generating all possible permutations of seats in a games
     """
 
     def heap_permutation(self, a: list, size: int):
@@ -62,7 +62,7 @@ class GameSimulator(ABC):
             self.__current_permutation = 0
 
     """
-    starts a new game
+    starts a new games
     """
 
     @abstractmethod
@@ -70,7 +70,7 @@ class GameSimulator(ABC):
         pass
 
     """
-    event before a game ends
+    event before a games ends
     """
 
     @abstractmethod
@@ -78,7 +78,7 @@ class GameSimulator(ABC):
         pass
 
     """
-    event when a game ends
+    event when a games ends
     """
 
     @abstractmethod
@@ -98,7 +98,7 @@ class GameSimulator(ABC):
         state = self.init_game()
         players = self.get_player_positions()
 
-        # notify players a new game is starting
+        # notify players a new games is starting
         for pos in range(0, len(players)):
             players[pos].set_current_pos(pos)
             players[pos].event_new_game()
@@ -120,7 +120,7 @@ class GameSimulator(ABC):
             for player in players:
                 player.event_action(pos, selected_action, state.clone())
 
-        # handler to run before the game ends
+        # handler to run before the games ends
         self.before_end_game(state)
 
         # notify all players of the result each player got
@@ -129,7 +129,7 @@ class GameSimulator(ABC):
                 player.event_result(pos, state.get_result(pos))
             player.event_end_game(state.clone())
 
-        # handler to run after a game ends
+        # handler to run after a games ends
         self.end_game(state)
 
     # prints the stats for all players

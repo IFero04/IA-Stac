@@ -1,34 +1,35 @@
-from game.game_simulator import GameSimulator
-from game.stac.simulator import StacSimulator
-from game.stac.state import StacState
-from game.stac.players.human import HumanStacPlayer
+from games.game_simulator import GameSimulator
+from games.stac.players.human import HumanStacPlayer
+from games.stac.simulator import StacSimulator
+"""
+IMPORT PLAYERS
+"""
+from games.stac.players.human import HumanStacPlayer
 
 
-def run_simulation(desc: str, simulator: GameSimulator, iterations: int, board_dimension: int):
+def run_simulation(desc: str, simulator: GameSimulator, iterations: int):
     print(f"----- {desc} -----")
 
     for i in range(0, iterations):
         simulator.change_player_positions()
         simulator.run_simulation()
 
-    print(f"Results for the game (Dimension = {board_dimension}):")
+    print(f"Results for the game:")
     simulator.print_stats()
 
 
 def main():
     print("ESTG IA Games Simulator")
 
-    num_iterations = 10000
-    board_dimension = 5
+    num_iterations = 1
 
     sim ={
-            "name": "TicTacToe - TESTE VS TESTE",
+            "name": "Stac - TESTE VS TESTE",
             "player1": HumanStacPlayer("TESTE1"),
             "player2": HumanStacPlayer("TESTE2")
         }
 
-    run_simulation(sim["name"], StacSimulator(sim["player1"], sim["player2"], board_dimension), num_iterations,
-                   board_dimension)
+    run_simulation(sim["name"], StacSimulator(sim["player1"], sim["player2"]), num_iterations)
 
 
 if __name__ == "__main__":

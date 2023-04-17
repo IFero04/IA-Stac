@@ -1,7 +1,7 @@
 from abc import ABC
 
-from game.stac.result import StacResult
-from game.player import Player
+from games.stac.result import StacResult
+from games.player import Player
 
 
 class StacPlayer(Player, ABC):
@@ -17,7 +17,7 @@ class StacPlayer(Player, ABC):
             self.__stats[c4res] = 0
 
         """
-        here we are storing the number of game
+        here we are storing the number of games
         """
         self.__num_games = 0
 

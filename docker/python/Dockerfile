@@ -17,6 +17,13 @@ RUN apt install build-essential -y
 # upgrade pip
 RUN python -m pip install --upgrade pip
 
+# install x11
+RUN apt install -qqy x11-apps
+
+# install pygame
+RUN pip3 install pygame
+RUN pip3 install opencv-python
+
 # dependencies from requirements.txt
 COPY ./requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
