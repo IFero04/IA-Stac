@@ -26,8 +26,8 @@ class StacState(State):
         the player character
         """
         self.__lord_grid = [[StacState.EMPTY_CELL for _i in range(self.__num_cols)] for _j in range(self.__num_rows)]
-        self.__lord_grid[0][0] = 0
-        self.__lord_grid[4][4] = 1
+        self.__lord_grid[0][0] = 1
+        self.__lord_grid[4][4] = 0
         """
         the grid
         """
