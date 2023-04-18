@@ -1,20 +1,23 @@
 from random import randint
 
-from game.stac.action import StacAction
-from game.stac.player import StacPlayer
-from game.stac.state import StacState
-from game.state import State
+from games.stac.action import StacAction
+from games.stac.player import StacPlayer
+from games.stac.state import StacState
+from games.state import State
 
 
-class RandomTicTacToePlayer(StacPlayer):
+class RandomStacPlayer(StacPlayer):
 
     def __init__(self, name):
         super().__init__(name)
 
     def get_action(self, state: StacState):
+        rand = randint(0, 1)
+        print(rand)
         return StacAction(
             randint(0, state.get_num_cols()),
-            randint(0, state.get_num_cols())
+            randint(0, state.get_num_cols()),
+            rand
         )
 
     def event_action(self, pos: int, action, new_state: State):

@@ -57,7 +57,6 @@ class StacState(State):
         """
         self.__end_game = False
 
-
     def get_grid(self):
         return self.__grid
 
@@ -71,28 +70,85 @@ class StacState(State):
         return 404
 
     def validate_action(self, action: StacAction) -> bool:
-        col = action.get_col()
+        pos_row = pos_col = None
+        for row in range(self.__num_rows):
+            for col in range(self.__num_cols):
+                if self.__lord_grid[row][col] == self.__acting_player:
+                    pos_row = row
+                    pos_col = col
         row = action.get_row()
+        col = action.get_col()
+        move_piece = action.get_move_piece()
 
         # valid column
         if col < 0 or col >= self.__num_cols:
             return False
+
         # valid line
         if row < 0 or row >= self.__num_rows:
             return False
 
+        # vertically or horizontally movement
+        if pos_row != row and pos_col != col:
+            return False
+
+        # player overlap
+        if self.__lord_grid[row][col] != -1:
+            return False
+
+        # validate moving piece
+        if move_piece and self.__grid[pos_row][pos_col] != 1:
+            return False
+
+        # validate tower
+        if move_piece and (self.__grid[row][col] >= 3 or self.__grid[row][col] < 0):
+            return False
+
+        # validate move piece over player
+        if move_piece and pos_col != col:
+            step = 1 if col > pos_col else -1
+            for check in range(pos_col + step, col, step):
+                if self.__lord_grid[row][check] != -1:
+                    return False
+
+        if move_piece and pos_row != row:
+            step = 1 if row > pos_row else -1
+            for check in range(pos_row + step, row, step):
+                if self.__lord_grid[check][col] != -1:
+                    return False
+
+
+
         return True
 
-    def update(self, action: StacAction):
-        col = action.get_col()
-        row = action.get_row()
-
-        # add the play
+    def __add_play(self, row, col, move_piece):
+        lord_row = None
+        lord_col = None
+        for r in range(self.__num_rows):
+            for c in range(self.__num_cols):
+                if self.__lord_grid[r][c] == self.__acting_player:
+                    lord_row = r
+                    lord_col = c
+                    self.__lord_grid[r][c] = -1
         self.__lord_grid[row][col] = self.__acting_player
 
+        if move_piece:
+            self.__grid[lord_row][lord_col] -= 1
+            self.__grid[row][col] += 1
+            if self.__grid[row][col] == 3:
+                self.__grid[row][col] = -1 - self.__acting_player
+
+    def update(self, action: StacAction):
+        row = action.get_row()
+        col = action.get_col()
+        move_piece = action.get_move_piece()
+
+        # add the play
+        self.__add_play(row, col, move_piece)
+
         # determine if there is a winner
-        if True:
-            self.__end_game = False
+        if self.__is_full():
+            self.__end_game = True
 
         # switch to next player
         self.__acting_player = 1 if self.__acting_player == 0 else 0
@@ -104,7 +160,11 @@ class StacState(State):
         pygame.display.update()
 
     def __is_full(self):
-        pass
+        for row in range(self.__num_rows):
+            for col in range(self.__num_cols):
+                if self.__grid[row][col] == 1:
+                    return False
+        return True
 
     def is_finished(self) -> bool:
         return self.__end_game
