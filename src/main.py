@@ -25,9 +25,9 @@ def main():
     num_iterations = 1
 
     sim ={
-            "name": "Stac - TESTE VS TESTE",
-            "player1": HumanStacPlayer("TESTE1"),
-            "player2": RandomStacPlayer("TESTE2")
+            "name": "Stac - HUMAN VS TESTE",
+            "player1": HumanStacPlayer("HUMAN"),
+            "player2": RandomStacPlayer("TESTE")
         }
 
     run_simulation(sim["name"], StacSimulator(sim["player1"], sim["player2"]), num_iterations)

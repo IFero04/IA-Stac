@@ -37,7 +37,7 @@ class StacState(State):
         """
         self.__last_moved = [(int, int), (int, int)]
         """
-         the display
+        the display
         """
         self.__board = StacDisplay()
         """
@@ -57,15 +57,19 @@ class StacState(State):
         """
         self.__winner = -1
         """
-        End Gane
+        Draw Counter
         """
-        self.__end_game = False
+        self.__draw_counter = 0
 
-    def get_grid(self):
-        return self.__grid
+    def count_draw(self):
+        tokens_in_game = 0
+        for row in range(self.__num_rows):
+            for col in range(self.__num_cols):
+                if self.__grid[row][col] == 1:
+                    tokens_in_game += 1
 
-    def get_num_players(self):
-        return 2
+        if tokens_in_game < (self.__num_rows * self.__num_cols) / 2 and self.__turns_count > 20:
+            self.__draw_counter += 1
 
     def validate_grid(self, row, col):
         if row >= 0 and col >= 0:
@@ -122,7 +126,8 @@ class StacState(State):
                     return False
 
         # validate move piece on consecutive turns
-        if move_piece and (self.__last_moved[self.__acting_player][0] == row or self.__last_moved[self.__acting_player][1] == col):
+        if move_piece and (
+                self.__last_moved[self.__acting_player][0] == row or self.__last_moved[self.__acting_player][1] == col):
             return False
 
         return True
@@ -130,6 +135,7 @@ class StacState(State):
     def __add_play(self, row, col, move_piece):
         lord_row = None
         lord_col = None
+        self.count_draw()
         for r in range(self.__num_rows):
             for c in range(self.__num_cols):
                 if self.__lord_grid[r][c] == self.__acting_player:
@@ -145,6 +151,41 @@ class StacState(State):
             self.__last_moved[self.__acting_player] = (row, col)
             if self.__grid[row][col] == 3:
                 self.__grid[row][col] = -1 - self.__acting_player
+                self.__draw_counter = 0
+
+    def __count_tower(self, player):
+        contador = 0
+        player_value = -1 - player
+
+        for row in range(self.__num_rows):
+            for col in range(self.__num_cols):
+                if self.__grid[row][col] == player_value:
+                    contador += 1
+
+        return contador
+
+    def __check_winner(self):
+        if self.__count_tower(self.__acting_player) >= 4:
+            return True
+
+        return False
+
+    def __is_full(self):
+        for row in range(self.__num_rows):
+            for col in range(self.__num_cols):
+                if self.__grid[row][col] == 1 and self.__draw_counter < 50:
+                    return False
+
+        towerP0 = self.__count_tower(0)
+        towerP1 = self.__count_tower(1)
+        if towerP0 > towerP1:
+            self.__has_winner = True
+            self.__winner = 0
+        elif towerP1 > towerP0:
+            self.__has_winner = True
+            self.__winner = 1
+
+        return True
 
     def update(self, action: StacAction):
         row = action.get_row()
@@ -155,8 +196,9 @@ class StacState(State):
         self.__add_play(row, col, move_piece)
 
         # determine if there is a winner
-        if self.__is_full():
-            self.__end_game = True
+        if self.__check_winner():
+            self.__has_winner = True
+            self.__winner = self.__acting_player
 
         # switch to next player
         self.__acting_player = 1 if self.__acting_player == 0 else 0
@@ -167,15 +209,8 @@ class StacState(State):
         self.__board.draw(WIN, self.__grid, self.__lord_grid)
         pygame.display.update()
 
-    def __is_full(self):
-        for row in range(self.__num_rows):
-            for col in range(self.__num_cols):
-                if self.__grid[row][col] == 1:
-                    return False
-        return True
-
     def is_finished(self) -> bool:
-        return self.__end_game
+        return self.__has_winner or self.__is_full()
 
     def get_acting_player(self) -> int:
         return self.__acting_player
@@ -192,12 +227,17 @@ class StacState(State):
         return cloned_state
 
     def get_result(self, pos) -> Optional[StacResult]:
-        if self.__end_game:
-            if self.__has_winner:
-                return StacResult.LOOSE if not (pos == self.__winner) else StacResult.WIN
-            else:
-                return StacResult.DRAW
+        if self.__has_winner:
+            return StacResult.LOOSE if not(pos == self.__winner) else StacResult.WIN
+        if self.__is_full():
+            return StacResult.DRAW
         return None
+
+    def get_grid(self):
+        return self.__grid
+
+    def get_num_players(self):
+        return 2
 
     def get_num_rows(self):
         return self.__num_rows

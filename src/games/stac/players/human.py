@@ -15,7 +15,6 @@ class HumanStacPlayer(StacPlayer):
             # noinspection PyBroadException
             try:
                 cords = list(map(int, self.get_move_gui()))
-                print(f"Cords Human Play: {cords}")
                 return StacAction(cords[0], cords[1], cords[2])
             except Exception:
                 continue
