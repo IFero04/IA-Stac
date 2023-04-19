@@ -33,6 +33,10 @@ class StacState(State):
         """
         self.__grid = [[StacState.START_CELL for _i in range(self.__num_cols)] for _j in range(self.__num_rows)]
         """
+        track last piece moved
+        """
+        self.__last_moved = [(int, int), (int, int)]
+        """
          the display
         """
         self.__board = StacDisplay()
@@ -117,7 +121,9 @@ class StacState(State):
                 if self.__lord_grid[check][col] != -1:
                     return False
 
-
+        # validate move piece on consecutive turns
+        if move_piece and (self.__last_moved[self.__acting_player][0] == row or self.__last_moved[self.__acting_player][1] == col):
+            return False
 
         return True
 
@@ -132,9 +138,11 @@ class StacState(State):
                     self.__lord_grid[r][c] = -1
         self.__lord_grid[row][col] = self.__acting_player
 
+        self.__last_moved[self.__acting_player] = (int, int)
         if move_piece:
             self.__grid[lord_row][lord_col] -= 1
             self.__grid[row][col] += 1
+            self.__last_moved[self.__acting_player] = (row, col)
             if self.__grid[row][col] == 3:
                 self.__grid[row][col] = -1 - self.__acting_player
 
