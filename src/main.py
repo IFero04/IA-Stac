@@ -1,6 +1,6 @@
 from games.game_simulator import GameSimulator
-from games.stac.players.human import HumanStacPlayer
 from games.stac.simulator import StacSimulator
+
 """
 IMPORT PLAYERS
 """
@@ -24,11 +24,11 @@ def main():
 
     num_iterations = 1
 
-    sim ={
-            "name": "Stac - HUMAN VS TESTE",
-            "player1": HumanStacPlayer("HUMAN"),
-            "player2": RandomStacPlayer("TESTE")
-        }
+    sim = {
+        "name": "Stac - HUMAN VS TESTE",
+        "player1": HumanStacPlayer("HUMAN"),
+        "player2": RandomStacPlayer("TESTE")
+    }
 
     run_simulation(sim["name"], StacSimulator(sim["player1"], sim["player2"]), num_iterations)
 
