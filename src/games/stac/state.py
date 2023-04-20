@@ -1,5 +1,6 @@
 import pygame
 from typing import Optional
+from random import randint
 
 from games.stac.action import StacAction
 from games.stac.result import StacResult
@@ -249,13 +250,19 @@ class StacState(State):
         pass
 
     def get_possible_actions(self):
-        return list(filter(
-            lambda action: self.validate_action(action),
-            map(
-                lambda row_col: StacAction(row_col[0], row_col[1]),
-                [(row, col) for row in range(self.get_num_rows()) for col in range(self.get_num_cols())]
+        return list(
+            filter(
+                lambda action: self.validate_action(action),
+                list(map(
+                    lambda row_col: StacAction(row_col[0], row_col[1], 0),
+                    [(row, col) for row in range(self.get_num_rows()) for col in range(self.get_num_cols())]
+                )) +
+                list(map(
+                    lambda row_col: StacAction(row_col[0], row_col[1], 1),
+                    [(row, col) for row in range(self.get_num_rows()) for col in range(self.get_num_cols())]
+                ))
             )
-        ))
+        )
 
     def sim_play(self, action):
         new_state = self.clone()

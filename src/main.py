@@ -22,11 +22,11 @@ def run_simulation(desc: str, simulator: GameSimulator, iterations: int):
 def main():
     print("ESTG IA Games Simulator")
 
-    num_iterations = 1
+    num_iterations = 1000
 
     sim = {
         "name": "Stac - HUMAN VS TESTE",
-        "player1": HumanStacPlayer("HUMAN"),
+        "player1": RandomStacPlayer("HUMAN"),
         "player2": RandomStacPlayer("TESTE")
     }
 
