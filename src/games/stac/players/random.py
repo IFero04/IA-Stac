@@ -1,3 +1,4 @@
+import pygame
 from random import choice, randint
 
 from games.stac.action import StacAction
@@ -12,6 +13,9 @@ class RandomStacPlayer(StacPlayer):
         super().__init__(name)
 
     def get_action(self, state: StacState):
+        if pygame.display.get_init():
+            state.display()
+            pass
         action = choice(state.get_possible_actions())
         return StacAction(
             action.get_row(), action.get_col(), action.get_move_piece()

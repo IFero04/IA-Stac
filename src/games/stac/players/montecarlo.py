@@ -1,0 +1,67 @@
+import pygame
+from random import choice, randint
+
+from games.stac.action import StacAction
+from games.stac.player import StacPlayer
+from games.stac.state import StacState
+from games.stac.result import StacResult
+from games.state import State
+
+
+class MonteCarloStacPlayer(StacPlayer):
+
+    def __init__(self, name):
+        super().__init__(name)
+
+    def get_action(self, state: StacState):
+        if pygame.display.get_init():
+            state.display()
+        selected_action = None
+        max_score = -1
+        actions = state.get_possible_actions()
+        cont = 1
+        loop = len(actions)
+        for action in actions:
+            new_state = state.sim_play(action)
+            score = self.montecarlo(new_state)
+            # ANTI BREAK PYGAME
+            if pygame.display.get_init():
+                for event in pygame.event.get():
+                    pass
+            # ANTI BREAK PYGAME
+            if score > max_score:
+                max_score = score
+                selected_action = action
+            elif score == max_score:
+                if action.get_move_piece() == 1:
+                    selected_action = action
+            print(f"CONTADOR PRIMARIO: {cont}/{loop}")
+            cont += 1
+
+        return selected_action
+
+    def montecarlo(self, state: StacState):
+        win = lost = draw = 0
+        for play in range(50):
+            #print(f"ContadorSecundário: {play}/50")
+            state_clone = state.clone()
+            while not state_clone.is_finished():
+                action = choice(state_clone.get_possible_actions())
+                state_clone.play(action)
+
+            if state_clone.get_result(self.get_current_pos()) == StacResult.WIN:
+                win += 1
+            elif state_clone.get_result(self.get_current_pos()) == StacResult.LOOSE:
+                lost += 1
+            else:
+                draw += 1
+
+        return (win + draw * 0.5) / (win + lost + draw)
+
+    def event_action(self, pos: int, action, new_state: State):
+        # ignore
+        pass
+
+    def event_end_game(self, final_state: State):
+        # ignore
+        pass

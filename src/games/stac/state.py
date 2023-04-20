@@ -1,22 +1,18 @@
 import pygame
 from typing import Optional
-from random import randint
 
 from games.stac.action import StacAction
 from games.stac.result import StacResult
 from games.state import State
-from games.stac.gui.constants import WIDTH, HEIGHT
 from games.stac.gui.display import StacDisplay
-
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Stac')
 
 
 class StacState(State):
     EMPTY_CELL = -1
     START_CELL = 1
 
-    def __init__(self):
+
+    def __init__(self, display_game:bool):
         super().__init__()
         """
         the dimensions of the board
@@ -40,6 +36,7 @@ class StacState(State):
         """
         the display
         """
+        self.__display_game = display_game
         self.__board = StacDisplay()
         """
         counts the number of turns in the current games
@@ -69,7 +66,7 @@ class StacState(State):
                 if self.__grid[row][col] == 1:
                     tokens_in_game += 1
 
-        if tokens_in_game < (self.__num_rows * self.__num_cols) / 2 and self.__turns_count > 20:
+        if tokens_in_game < 6 and self.__turns_count > 25:
             self.__draw_counter += 1
 
     def validate_grid(self, row, col):
@@ -155,15 +152,15 @@ class StacState(State):
                 self.__draw_counter = 0
 
     def __count_tower(self, player):
-        contador = 0
+        cont = 0
         player_value = -1 - player
 
         for row in range(self.__num_rows):
             for col in range(self.__num_cols):
                 if self.__grid[row][col] == player_value:
-                    contador += 1
+                    cont += 1
 
-        return contador
+        return cont
 
     def __check_winner(self):
         if self.__count_tower(self.__acting_player) >= 4:
@@ -172,10 +169,12 @@ class StacState(State):
         return False
 
     def __is_full(self):
-        for row in range(self.__num_rows):
-            for col in range(self.__num_cols):
-                if self.__grid[row][col] == 1 and self.__draw_counter < 50:
-                    return False
+        #print(f"DRAW: {self.__draw_counter}, Turnos: {self.__turns_count}")
+        if self.__draw_counter < 50 and self.__turns_count < 400:
+            for row in range(self.__num_rows):
+                for col in range(self.__num_cols):
+                    if self.__grid[row][col] == 1:
+                        return False
 
         towerP0 = self.__count_tower(0)
         towerP1 = self.__count_tower(1)
@@ -185,6 +184,9 @@ class StacState(State):
         elif towerP1 > towerP0:
             self.__has_winner = True
             self.__winner = 1
+        else:
+            self.__has_winner = False
+            self.__winner = -1
 
         return True
 
@@ -207,8 +209,9 @@ class StacState(State):
         self.__turns_count += 1
 
     def display(self):
-        self.__board.draw(WIN, self.__grid, self.__lord_grid)
-        pygame.display.update()
+        if pygame.display.get_init():
+            self.__board.draw(self.__grid, self.__lord_grid)
+            pygame.display.flip()
 
     def is_finished(self) -> bool:
         return self.__has_winner or self.__is_full()
@@ -217,7 +220,7 @@ class StacState(State):
         return self.__acting_player
 
     def clone(self):
-        cloned_state = StacState()
+        cloned_state = StacState(False)
         cloned_state.__turns_count = self.__turns_count
         cloned_state.__acting_player = self.__acting_player
         cloned_state.__has_winner = self.__has_winner
@@ -254,11 +257,11 @@ class StacState(State):
             filter(
                 lambda action: self.validate_action(action),
                 list(map(
-                    lambda row_col: StacAction(row_col[0], row_col[1], 0),
+                    lambda row_col: StacAction(row_col[0], row_col[1], 1),
                     [(row, col) for row in range(self.get_num_rows()) for col in range(self.get_num_cols())]
                 )) +
                 list(map(
-                    lambda row_col: StacAction(row_col[0], row_col[1], 1),
+                    lambda row_col: StacAction(row_col[0], row_col[1], 0),
                     [(row, col) for row in range(self.get_num_rows()) for col in range(self.get_num_cols())]
                 ))
             )

@@ -23,5 +23,5 @@ class StacAction:
     def get_move(self):
         return self.__row, self.__col, self.__move_piece
 
-    #def __repr__(self):
-        #return (f"Row: {self.__row} | Col: {self.__col} | Move: {self.__move_piece}\n")
+    def __repr__(self):
+        return (f"Row: {self.__row} | Col: {self.__col} | Move: {self.__move_piece}\n")

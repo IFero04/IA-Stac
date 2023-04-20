@@ -6,6 +6,7 @@ IMPORT PLAYERS
 """
 from games.stac.players.human import HumanStacPlayer
 from games.stac.players.random import RandomStacPlayer
+from games.stac.players.montecarlo import MonteCarloStacPlayer
 
 
 def run_simulation(desc: str, simulator: GameSimulator, iterations: int):
@@ -22,15 +23,16 @@ def run_simulation(desc: str, simulator: GameSimulator, iterations: int):
 def main():
     print("ESTG IA Games Simulator")
 
-    num_iterations = 1000
+    num_iterations = 1
+    display_game = True
 
     sim = {
-        "name": "Stac - HUMAN VS TESTE",
-        "player1": RandomStacPlayer("HUMAN"),
-        "player2": RandomStacPlayer("TESTE")
+        "name": "Stac - HUMAN VS ROBO",
+        "player1": HumanStacPlayer("HUMAN"),
+        "player2": MonteCarloStacPlayer("ROBO")
     }
 
-    run_simulation(sim["name"], StacSimulator(sim["player1"], sim["player2"]), num_iterations)
+    run_simulation(sim["name"], StacSimulator(sim["player1"], sim["player2"], display_game), num_iterations)
 
 
 if __name__ == "__main__":

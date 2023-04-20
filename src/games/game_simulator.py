@@ -1,12 +1,15 @@
+import pygame
 from abc import ABC, abstractmethod
 
 from games.player import Player
 from games.state import State
+from games.stac.players.human import HumanStacPlayer
+from games.stac.gui.constants import WIDTH, HEIGHT
 
 
 class GameSimulator(ABC):
 
-    def __init__(self, players: list):
+    def __init__(self, players: list, display: bool):
         # only allow list of players
         assert len(list(filter(lambda p: not isinstance(p, Player), players))) <= 0
 
@@ -17,6 +20,15 @@ class GameSimulator(ABC):
 
         # the selected permutation for the current games
         self.__current_permutation = 0
+
+        # create display
+        self.display_game = display
+        for player in players:
+            if isinstance(player, HumanStacPlayer) or self.display_game:
+                pygame.display.init()
+                self.WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+                pygame.display.set_caption('Stac')
+
 
     """
     Adapted from https://www.geeksforgeeks.org/heaps-algorithm-for-generating-permutations/
