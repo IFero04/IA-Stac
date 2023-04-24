@@ -30,9 +30,9 @@ class StacState(State):
         """
         self.__grid = [[StacState.START_CELL for _i in range(self.__num_cols)] for _j in range(self.__num_rows)]
         """
-        track last piece moved
+        track the last moved token 
         """
-        self.__last_moved = [(int, int), (int, int)]
+        self.__last_token_moved = [(None, None), (None, None)]
         """
         the display
         """
@@ -66,7 +66,7 @@ class StacState(State):
                 if self.__grid[row][col] == 1:
                     tokens_in_game += 1
 
-        if tokens_in_game < 6 and self.__turns_count > 25:
+        if tokens_in_game < 10 and self.__turns_count > 50:
             self.__draw_counter += 1
 
     def validate_grid(self, row, col):
@@ -124,8 +124,7 @@ class StacState(State):
                     return False
 
         # validate move piece on consecutive turns
-        if move_piece and (
-                self.__last_moved[self.__acting_player][0] == row or self.__last_moved[self.__acting_player][1] == col):
+        if move_piece and self.__last_token_moved[self.__acting_player] == (pos_row, pos_col):
             return False
 
         return True
@@ -142,11 +141,12 @@ class StacState(State):
                     self.__lord_grid[r][c] = -1
         self.__lord_grid[row][col] = self.__acting_player
 
-        self.__last_moved[self.__acting_player] = (int, int)
+        self.__last_token_moved[self.__acting_player] = (None, None)
+
         if move_piece:
             self.__grid[lord_row][lord_col] -= 1
             self.__grid[row][col] += 1
-            self.__last_moved[self.__acting_player] = (row, col)
+            self.__last_token_moved[self.__acting_player] = (row, col)
             if self.__grid[row][col] == 3:
                 self.__grid[row][col] = -1 - self.__acting_player
                 self.__draw_counter = 0
@@ -170,11 +170,11 @@ class StacState(State):
 
     def __is_full(self):
         #print(f"DRAW: {self.__draw_counter}, Turnos: {self.__turns_count}")
-        if self.__draw_counter < 50 and self.__turns_count < 400:
-            for row in range(self.__num_rows):
-                for col in range(self.__num_cols):
-                    if self.__grid[row][col] == 1:
-                        return False
+        #if self.__draw_counter < 50 and self.__turns_count < 500:
+        for row in range(self.__num_rows):
+            for col in range(self.__num_cols):
+                if self.__grid[row][col] == 1:
+                    return False
 
         towerP0 = self.__count_tower(0)
         towerP1 = self.__count_tower(1)
@@ -209,6 +209,7 @@ class StacState(State):
         self.__turns_count += 1
 
     def display(self):
+        print(f"Player ({self.__acting_player}): {self.get_possible_actions()}")
         if pygame.display.get_init():
             self.__board.draw(self.__grid, self.__lord_grid)
             pygame.display.flip()
@@ -224,6 +225,7 @@ class StacState(State):
         cloned_state.__turns_count = self.__turns_count
         cloned_state.__acting_player = self.__acting_player
         cloned_state.__has_winner = self.__has_winner
+        cloned_state.__last_token_moved = self.__last_token_moved
         for row in range(0, self.__num_rows):
             for col in range(0, self.__num_cols):
                 cloned_state.__grid[row][col] = self.__grid[row][col]
@@ -239,6 +241,12 @@ class StacState(State):
 
     def get_grid(self):
         return self.__grid
+
+    def get_lord_grid(self):
+        return self.__lord_grid
+
+    def get_turn(self):
+        return self.__turns_count
 
     def get_num_players(self):
         return 2

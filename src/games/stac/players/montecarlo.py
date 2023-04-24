@@ -1,7 +1,6 @@
 import pygame
 from random import choice, randint
 
-from games.stac.action import StacAction
 from games.stac.player import StacPlayer
 from games.stac.state import StacState
 from games.stac.result import StacResult
@@ -22,28 +21,30 @@ class MonteCarloStacPlayer(StacPlayer):
         cont = 1
         loop = len(actions)
         for action in actions:
-            new_state = state.sim_play(action)
-            score = self.montecarlo(new_state)
-            # ANTI BREAK PYGAME
+            """ ANTI BREAK PYGAME """
             if pygame.display.get_init():
                 for event in pygame.event.get():
-                    pass
-            # ANTI BREAK PYGAME
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        exit()
+            """ ANTI BREAK PYGAME """
+
+            new_state = state.sim_play(action)
+            score = self.montecarlo(new_state)
             if score > max_score:
                 max_score = score
                 selected_action = action
             elif score == max_score:
                 if action.get_move_piece() == 1:
                     selected_action = action
-            print(f"CONTADOR PRIMARIO: {cont}/{loop}")
+            print(f"CALCULAR JOGADA: {cont}/{loop} | SCORE: {score}/{max_score}")
             cont += 1
 
         return selected_action
 
     def montecarlo(self, state: StacState):
         win = lost = draw = 0
-        for play in range(50):
-            #print(f"ContadorSecundário: {play}/50")
+        for play in range(25):
             state_clone = state.clone()
             while not state_clone.is_finished():
                 action = choice(state_clone.get_possible_actions())
@@ -56,7 +57,7 @@ class MonteCarloStacPlayer(StacPlayer):
             else:
                 draw += 1
 
-        return (win + draw * 0.5) / (win + lost + draw)
+        return (win + draw * 0.25) / (win + lost + draw)
 
     def event_action(self, pos: int, action, new_state: State):
         # ignore
