@@ -170,11 +170,11 @@ class StacState(State):
 
     def __is_full(self):
         #print(f"DRAW: {self.__draw_counter}, Turnos: {self.__turns_count}")
-        #if self.__draw_counter < 50 and self.__turns_count < 500:
-        for row in range(self.__num_rows):
-            for col in range(self.__num_cols):
-                if self.__grid[row][col] == 1:
-                    return False
+        if self.__turns_count < 200:
+            for row in range(self.__num_rows):
+                for col in range(self.__num_cols):
+                    if self.__grid[row][col] == 1:
+                        return False
 
         towerP0 = self.__count_tower(0)
         towerP1 = self.__count_tower(1)
@@ -209,7 +209,6 @@ class StacState(State):
         self.__turns_count += 1
 
     def display(self):
-        print(f"Player ({self.__acting_player}): {self.get_possible_actions()}")
         if pygame.display.get_init():
             self.__board.draw(self.__grid, self.__lord_grid)
             pygame.display.flip()

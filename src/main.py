@@ -9,6 +9,8 @@ from games.stac.players.random import RandomStacPlayer
 from games.stac.players.montecarlo import MonteCarloStacPlayer
 from games.stac.players.minimax import MinimaxStacPlayer
 from games.stac.players.improved_minimax import ImprovedMinimaxStacPlayer
+from games.stac.players.q_learning import QLearningStacPlayer
+
 
 
 def run_simulation(desc: str, simulator: GameSimulator, iterations: int):
@@ -31,7 +33,7 @@ def main():
     sim = {
         "name": "Stac - HUMAN VS ROBO",
         "player1": HumanStacPlayer("HUMAN"),
-        "player2": ImprovedMinimaxStacPlayer("ROBO")
+        "player2": QLearningStacPlayer("ROBO")
     }
 
     run_simulation(sim["name"], StacSimulator(sim["player1"], sim["player2"], display_game), num_iterations)
