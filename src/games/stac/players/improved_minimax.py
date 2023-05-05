@@ -258,13 +258,8 @@ class ImprovedMinimaxStacPlayer(StacPlayer):
                     return action
 
         action = self.minimax(state, 7)
-        clone_state = state.clone()
-        print(f"Chased Action: {self.__heuristic(clone_state.sim_play(action))}")
 
-        #self.match.append((str(state) + "$" + str(action) + "\n"))
-
-        add_history(self.path, (str(state) + "$" + str(action) + "\n"))
-        self.history = read_file(self.path)
+        self.match.append((str(state) + "$" + str(action) + "\n"))
 
         return action
 
@@ -273,18 +268,19 @@ class ImprovedMinimaxStacPlayer(StacPlayer):
         pass
 
     def event_end_game(self, final_state: State):
-        """
+        result = final_state.get_result(self.get_current_pos())
         history_plays = []
         with open(self.path, 'r') as file:
             lines = file.read()
             lines = lines.split('\n')
             for line in lines:
                 history_plays.append(line)
-
-        for play in self.match:
-            if play not in history_plays:
-                add_history(self.path, play)
-                history_plays.append(play)
+                
+        if result == StacResult.WIN:
+            for play in self.match:
+                if play not in history_plays:
+                    add_history(self.path, play)
+                    history_plays.append(play)
 
         self.history = read_file(self.path)
-        """
+
