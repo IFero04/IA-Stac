@@ -25,7 +25,7 @@ class StacDisplay:
         for row in range(ROWS):
             for col in range(COLS):
                 if lord_grid[row][col] == 0:
-                    (Lord(row, col, WHITE)).draw(win)
+                    (Lord(row, col, RED)).draw(win)
                 elif lord_grid[row][col] == 1:
                     (Lord(row, col, BLUE)).draw(win)
 

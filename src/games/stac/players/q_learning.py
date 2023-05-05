@@ -20,12 +20,11 @@ class QLearningStacPlayer(StacPlayer):
 
     def get_state_key(self, state: StacState):
         key = np.array(state)
-        return tuple(key.flatten())
+        return str(key.flatten())
 
     def update_q_table(self, state_key, action, reward, next_state_key):
         if next_state_key not in self.q_table:
             self.q_table[next_state_key] = {a: 0 for a in self.new_state.get_possible_actions()}
-
 
         q_values = self.q_table[state_key]
         max_next_q_value = max(self.q_table[next_state_key].values())
@@ -67,22 +66,23 @@ class QLearningStacPlayer(StacPlayer):
         return self.q_lerning_agent(state)
 
     def event_action(self, pos: int, action, new_state: State):
-        self.new_state = new_state
-        state_key = self.get_state_key(self.state.clone())
-        next_state_key = self.get_state_key(self.new_state.clone())
-        if self.new_state.is_finished():
-            # Game is finished, update Q-value with the reward
-            result = self.new_state.get_result(pos)
-            if result == StacResult.WIN:
-                reward = 1
-            elif result == StacResult.LOOSE:
-                reward = -1
+        if self.get_current_pos() == pos:
+            self.new_state = new_state
+            state_key = self.get_state_key(self.state.clone())
+            next_state_key = self.get_state_key(self.new_state.clone())
+            if self.new_state.is_finished():
+                # Game is finished, update Q-value with the reward
+                result = self.new_state.get_result(pos)
+                if result == StacResult.WIN:
+                    reward = 1
+                elif result == StacResult.LOOSE:
+                    reward = -1
+                else:
+                    reward = 0
             else:
+                # Game is not finished, reward is 0
                 reward = 0
-        else:
-            # Game is not finished, reward is 0
-            reward = 0
-        self.update_q_table(state_key, action, reward, next_state_key)
+            self.update_q_table(state_key, action, reward, next_state_key)
 
     def event_end_game(self, final_state: State):
         # ignore

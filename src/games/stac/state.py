@@ -11,8 +11,7 @@ class StacState(State):
     EMPTY_CELL = -1
     START_CELL = 1
 
-
-    def __init__(self, display_game:bool):
+    def __init__(self, display_game: bool):
         super().__init__()
         """
         the dimensions of the board
@@ -32,7 +31,7 @@ class StacState(State):
         """
         track the last moved token 
         """
-        self.__last_token_moved = [(None, None), (None, None)]
+        self.__can_move = [True, True]
         """
         the display
         """
@@ -51,13 +50,17 @@ class StacState(State):
         """
         self.__has_winner = False
         """
-        jogador vencedor
+        Winner
         """
         self.__winner = -1
         """
         Draw Counter
         """
         self.__draw_counter = 0
+        """
+        First Tower
+        """
+        self.__first_tower = None
 
     def count_draw(self):
         tokens_in_game = 0
@@ -66,7 +69,7 @@ class StacState(State):
                 if self.__grid[row][col] == 1:
                     tokens_in_game += 1
 
-        if tokens_in_game < 10 and self.__turns_count > 50:
+        if tokens_in_game < 8:
             self.__draw_counter += 1
 
     def validate_grid(self, row, col):
@@ -124,7 +127,7 @@ class StacState(State):
                     return False
 
         # validate move piece on consecutive turns
-        if move_piece and self.__last_token_moved[self.__acting_player] == (pos_row, pos_col):
+        if move_piece and not self.__can_move[self.__acting_player]:
             return False
 
         return True
@@ -141,12 +144,12 @@ class StacState(State):
                     self.__lord_grid[r][c] = -1
         self.__lord_grid[row][col] = self.__acting_player
 
-        self.__last_token_moved[self.__acting_player] = (None, None)
+        self.__can_move[self.__acting_player] = True
 
         if move_piece:
             self.__grid[lord_row][lord_col] -= 1
             self.__grid[row][col] += 1
-            self.__last_token_moved[self.__acting_player] = (row, col)
+            self.__can_move[self.__acting_player] = False
             if self.__grid[row][col] == 3:
                 self.__grid[row][col] = -1 - self.__acting_player
                 self.__draw_counter = 0
@@ -160,6 +163,12 @@ class StacState(State):
                 if self.__grid[row][col] == player_value:
                     cont += 1
 
+        if cont == 1 and self.__first_tower is None:
+            self.__first_tower = self.__acting_player
+
+        if cont == 1 and self.__first_tower != self.__acting_player:
+            self.__first_tower = -1
+
         return cont
 
     def __check_winner(self):
@@ -169,8 +178,7 @@ class StacState(State):
         return False
 
     def __is_full(self):
-        #print(f"DRAW: {self.__draw_counter}, Turnos: {self.__turns_count}")
-        if self.__turns_count < 200:
+        if self.__turns_count < 100 and self.__draw_counter < 25:
             for row in range(self.__num_rows):
                 for col in range(self.__num_cols):
                     if self.__grid[row][col] == 1:
@@ -204,7 +212,7 @@ class StacState(State):
             self.__winner = self.__acting_player
 
         # switch to next player
-        self.__acting_player = 1 if self.__acting_player == 0 else 0
+        self.switch_player()
 
         self.__turns_count += 1
 
@@ -224,7 +232,11 @@ class StacState(State):
         cloned_state.__turns_count = self.__turns_count
         cloned_state.__acting_player = self.__acting_player
         cloned_state.__has_winner = self.__has_winner
-        cloned_state.__last_token_moved = self.__last_token_moved
+        cloned_state.__can_move[0] = self.__can_move[0]
+        cloned_state.__can_move[1] = self.__can_move[1]
+        cloned_state.__has_winner = self.__has_winner
+        cloned_state.__winner = self.__winner
+        cloned_state.__first_tower = self.__first_tower
         for row in range(0, self.__num_rows):
             for col in range(0, self.__num_cols):
                 cloned_state.__grid[row][col] = self.__grid[row][col]
@@ -233,7 +245,7 @@ class StacState(State):
 
     def get_result(self, pos) -> Optional[StacResult]:
         if self.__has_winner:
-            return StacResult.LOOSE if not(pos == self.__winner) else StacResult.WIN
+            return StacResult.WIN if pos == self.__winner else StacResult.LOOSE
         if self.__is_full():
             return StacResult.DRAW
         return None
@@ -255,6 +267,15 @@ class StacState(State):
 
     def get_num_cols(self):
         return self.__num_cols
+
+    def get_winner(self):
+        return self.__winner
+
+    def get_first_tower(self):
+        return self.__first_tower
+
+    def switch_player(self):
+        self.__acting_player = 1 if self.__acting_player == 0 else 0
 
     def before_results(self):
         pass
@@ -278,3 +299,6 @@ class StacState(State):
         new_state = self.clone()
         new_state.play(action)
         return new_state
+
+    def __repr__(self):
+        return f"Player: {self.__acting_player}, Grid: {self.__grid}, Lord: {self.__lord_grid}, CanMove: {self.__can_move}"

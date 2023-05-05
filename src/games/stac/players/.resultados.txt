@@ -1,0 +1,11 @@
+ImprovedMiniMax  (7/5)
+    1ª Jogada: 108651 iterações / 16 segundos
+    2ª Jogada: 141363 iterações / 25 segundos
+
+ImprovedMiniMax  (7/6)
+    1ª Jogada: 176044 iterações / 26 segundos
+    2ª Jogada: 213503 iterações / 40 segundos
+
+Minimax (5)
+    1ª Jogada: 150306 iterações / 8 segundos
+    2ª Jogada: 19662 iterações / 3 segundos

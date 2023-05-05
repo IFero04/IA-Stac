@@ -17,7 +17,7 @@ class Lord:
         self.y = SQUARE_SIZE * self.row + SQUARE_SIZE // 2
 
     def draw(self, win):
-        if self.color == WHITE:
+        if self.color == RED:
             win.blit(P1, (self.x - P1.get_width() // 2, self.y - P1.get_height() // 2))
         else:
             win.blit(P2, (self.x - P2.get_width() // 2, self.y - P2.get_height() // 2))

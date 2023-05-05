@@ -42,7 +42,9 @@ class MinimaxStacPlayer(StacPlayer):
             }[state.get_result(self.get_current_pos())]
 
         if depth == 0:
-            return self.__heuristic(state)
+            heuristic = self.__heuristic(state)
+            print(f"Player {self.get_name()} | Valor Jogada: {heuristic}")
+            return heuristic
 
         if self.get_current_pos() == state.get_acting_player():
             value = -math.inf

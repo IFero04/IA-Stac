@@ -27,13 +27,13 @@ def run_simulation(desc: str, simulator: GameSimulator, iterations: int):
 def main():
     print("ESTG IA Games Simulator")
 
-    num_iterations = 1
+    num_iterations = 10
     display_game = True
 
     sim = {
-        "name": "Stac - HUMAN VS ROBO",
-        "player1": HumanStacPlayer("HUMAN"),
-        "player2": QLearningStacPlayer("ROBO")
+        "name": "Stac - Tester VS ImprovedMinimax",
+        "player1": HumanStacPlayer("Tester"),
+        "player2": ImprovedMinimaxStacPlayer("ImprovedMinimax")
     }
 
     run_simulation(sim["name"], StacSimulator(sim["player1"], sim["player2"], display_game), num_iterations)

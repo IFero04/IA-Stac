@@ -23,11 +23,15 @@ class GameSimulator(ABC):
 
         # create display
         self.display_game = display
+        has_human = False
         for player in players:
-            if isinstance(player, HumanStacPlayer) or self.display_game:
-                pygame.display.init()
-                self.WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-                pygame.display.set_caption('Stac')
+            if isinstance(player, HumanStacPlayer):
+                has_human = True
+
+        if has_human or self.display_game:
+            pygame.display.init()
+            self.WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+            pygame.display.set_caption('Stac')
 
 
     """
@@ -131,7 +135,6 @@ class GameSimulator(ABC):
             # notify players of the action
             for player in players:
                 player.event_action(pos, selected_action, state.clone())
-
         # handler to run before the games ends
         self.before_end_game(state)
 
