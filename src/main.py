@@ -32,7 +32,7 @@ def main():
 
     sim = {
         "name": "Stac - Tester VS ImprovedMinimax",
-        "player1": HumanStacPlayer("Tester"),
+        "player1": MonteCarloStacPlayer("Tester"),
         "player2": ImprovedMinimaxStacPlayer("ImprovedMinimax")
     }
 

@@ -49,6 +49,10 @@ class ImprovedMinimaxStacPlayer(StacPlayer):
         """
         Check Victory
         """
+        if player_stacks >= 4:
+            return 90
+        elif opponent_stacks >= 4:
+            return -90
         """
         if player_stacks == 3 and grid[player_row][player_col] == 1:
             # Check for a winning move by the player
@@ -275,7 +279,7 @@ class ImprovedMinimaxStacPlayer(StacPlayer):
             lines = lines.split('\n')
             for line in lines:
                 history_plays.append(line)
-                
+
         if result == StacResult.WIN:
             for play in self.match:
                 if play not in history_plays:
