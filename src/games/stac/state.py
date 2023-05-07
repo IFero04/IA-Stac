@@ -154,25 +154,30 @@ class StacState(State):
                 self.__grid[row][col] = -1 - self.__acting_player
                 self.__draw_counter = 0
 
-    def __count_tower(self, player):
-        cont = 0
-        player_value = -1 - player
+    def __count_tower(self):
+        cont_p0 = 0
+        p0_value = -1
+        cont_p1 = 0
+        p1_value = -2
 
         for row in range(self.__num_rows):
             for col in range(self.__num_cols):
-                if self.__grid[row][col] == player_value:
-                    cont += 1
+                if self.__grid[row][col] == p0_value:
+                    cont_p0 += 1
+                elif self.__grid[row][col] == p1_value:
+                    cont_p1 += 1
 
-        if cont == 1 and self.__first_tower is None:
-            self.__first_tower = self.__acting_player
-
-        if cont == 1 and self.__first_tower != self.__acting_player:
-            self.__first_tower = -1
-
-        return cont
+        return cont_p0, cont_p1
 
     def __check_winner(self):
-        if self.__count_tower(self.__acting_player) >= 4:
+        towers = self.__count_tower()
+        if towers[0] >= 4:
+            self.__has_winner = True
+            self.__winner = 0
+            return True
+        elif towers[1] >= 4:
+            self.__has_winner = True
+            self.__winner = 1
             return True
 
         return False
@@ -184,17 +189,7 @@ class StacState(State):
                     if self.__grid[row][col] == 1:
                         return False
 
-        towerP0 = self.__count_tower(0)
-        towerP1 = self.__count_tower(1)
-        if towerP0 > towerP1:
-            self.__has_winner = True
-            self.__winner = 0
-        elif towerP1 > towerP0:
-            self.__has_winner = True
-            self.__winner = 1
-        else:
-            self.__has_winner = False
-            self.__winner = -1
+        self.__check_winner()
 
         return True
 
@@ -207,9 +202,7 @@ class StacState(State):
         self.__add_play(row, col, move_piece)
 
         # determine if there is a winner
-        if self.__check_winner():
-            self.__has_winner = True
-            self.__winner = self.__acting_player
+        self.__check_winner()
 
         # switch to next player
         self.switch_player()
@@ -222,7 +215,7 @@ class StacState(State):
             pygame.display.flip()
 
     def is_finished(self) -> bool:
-        return self.__has_winner or self.__is_full()
+        return self.__check_winner() or self.__is_full()
 
     def get_acting_player(self) -> int:
         return self.__acting_player
@@ -273,6 +266,12 @@ class StacState(State):
 
     def get_first_tower(self):
         return self.__first_tower
+
+    def set_grid(self, grid):
+        self.__grid = grid
+
+    def set_lord_grid(self, lord_grid):
+        self.__lord_grid = lord_grid
 
     def switch_player(self):
         self.__acting_player = 1 if self.__acting_player == 0 else 0

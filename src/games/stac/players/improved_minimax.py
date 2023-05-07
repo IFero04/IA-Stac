@@ -1,7 +1,7 @@
 import pygame
 import math
 
-from games.stac.players.history import read_file, add_history, str_to_action
+from games.stac.players.history import read_file, add_history, str_to_action, str_to_state, check_play
 from games.stac.player import StacPlayer
 from games.stac.state import StacState
 from games.stac.result import StacResult
@@ -20,6 +20,7 @@ class ImprovedMinimaxStacPlayer(StacPlayer):
         """
         Game State
         """
+        value = 0
         grid = state.get_grid()
         lord_grid = state.get_lord_grid()
 
@@ -50,38 +51,10 @@ class ImprovedMinimaxStacPlayer(StacPlayer):
         Check Victory
         """
         if player_stacks >= 4:
-            return 90
+            value = 90
         elif opponent_stacks >= 4:
-            return -90
-        """
-        if player_stacks == 3 and grid[player_row][player_col] == 1:
-            # Check for a winning move by the player
-            for check in range(0, state.get_num_rows()):
-                if grid[check][player_col] == 2:
-                    action = list(map(int, (check, player_col, 1)))
-                    if state.validate_action(StacAction(action[0], action[1], action[2])):
-                        return 45
+            value = -90
 
-            for check in range(0, state.get_num_cols()):
-                if grid[player_row][check] == 2:
-                    action = list(map(int, (player_row, check, 1)))
-                    if state.validate_action(StacAction(action[0], action[1], action[2])):
-                        return 45
-
-        if opponent_stacks == 3 and grid[opponent_row][opponent_col] == 1:
-            # Check for a winning move by the opponent
-            for check in range(0, state.get_num_rows()):
-                if grid[check][opponent_col] == 2:
-                    action = list(map(int, (check, opponent_col, 1)))
-                    if state.validate_action(StacAction(action[0], action[1], action[2])):
-                        return -45
-
-            for check in range(0, state.get_num_cols()):
-                if grid[opponent_row][check] == 2:
-                    action = list(map(int, (opponent_row, check, 1)))
-                    if state.validate_action(StacAction(action[0], action[1], action[2])):
-                        return -45
-        """
         """
         Material Advantage 
         """
@@ -94,7 +67,7 @@ class ImprovedMinimaxStacPlayer(StacPlayer):
                 elif grid[row][col] == 2:
                     unclaimed_stacks.append((row, col))
 
-        value = player_stacks - opponent_stacks
+        value += player_stacks - opponent_stacks
 
         if value > 0:
             value += len(unclaimed_stacks) / 5
@@ -102,13 +75,7 @@ class ImprovedMinimaxStacPlayer(StacPlayer):
             value -= len(unclaimed_stacks) / 5
         else:
             value += len(unclaimed_stacks) / 10
-        """
-        # Take Initiative
-        if state.get_first_tower() == player_pos and player_stacks == 1:
-            value += 10
-        elif state.get_first_tower() == opponent_pos and opponent_stacks == 1:
-            value -= 10
-"""
+
         """
         Pawn Position
         """
@@ -257,11 +224,9 @@ class ImprovedMinimaxStacPlayer(StacPlayer):
             if str(state) == play[0]:
                 action = str_to_action(play[1])
                 if state.validate_action(action):
-                    clone_state = state.clone()
-                    print(f"Chased Action: {self.__heuristic(clone_state.sim_play(action))}")
                     return action
 
-        action = self.minimax(state, 7)
+        action = self.minimax(state, 6)
 
         self.match.append((str(state) + "$" + str(action) + "\n"))
 
@@ -282,7 +247,9 @@ class ImprovedMinimaxStacPlayer(StacPlayer):
 
         if result == StacResult.WIN:
             for play in self.match:
-                if play not in history_plays:
+                flag = check_play(play.split('$'))
+
+                if play not in history_plays and flag:
                     add_history(self.path, play)
                     history_plays.append(play)
 
