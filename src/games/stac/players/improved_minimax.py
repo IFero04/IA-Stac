@@ -6,7 +6,6 @@ from games.stac.player import StacPlayer
 from games.stac.state import StacState
 from games.stac.result import StacResult
 from games.state import State
-from games.stac.action import StacAction
 
 
 class ImprovedMinimaxStacPlayer(StacPlayer):
@@ -51,9 +50,9 @@ class ImprovedMinimaxStacPlayer(StacPlayer):
         Check Victory
         """
         if player_stacks >= 4:
-            value = 90
+            value = 45
         elif opponent_stacks >= 4:
-            value = -90
+            value = -45
 
         """
         Material Advantage 
@@ -86,26 +85,26 @@ class ImprovedMinimaxStacPlayer(StacPlayer):
                 if stack[0] == player_row or stack[1] == player_col:
                     contP += 1
                 if stack[0] + 1 == player_row:
-                    value += 0.05
+                    value += 0.10
                 elif stack[0] - 1 == player_row:
-                    value += 0.05
+                    value += 0.10
                 if stack[1] + 1 == player_col:
-                    value += 0.05
+                    value += 0.10
                 elif stack[1] - 1 == player_col:
-                    value += 0.05
+                    value += 0.10
 
         if grid[opponent_row][opponent_col] == 1:
             for stack in unclaimed_stacks:
                 if stack[0] == opponent_row or stack[1] == opponent_col:
                     contO += 1
                 if stack[0] + 1 == opponent_row:
-                    value -= 0.05
+                    value -= 0.10
                 elif stack[0] - 1 == opponent_row:
-                    value -= 0.05
+                    value -= 0.10
                 if stack[1] + 1 == opponent_col:
-                    value -= 0.05
+                    value -= 0.10
                 elif stack[1] - 1 == opponent_col:
-                    value -= 0.05
+                    value -= 0.10
 
         if contP >= 2 or contO >= 2:
             if contP >= contO:
@@ -125,13 +124,13 @@ class ImprovedMinimaxStacPlayer(StacPlayer):
             for stack in unclaimed_stacks:
                 if stack[0] == opponent_row:
                     step = 1 if stack[1] > opponent_col else -1
-                    for block in range(opponent_col + step, stack[1] - step, step):
+                    for block in range(opponent_col + step, stack[1], step):
                         if lord_grid[opponent_row][block] != -1:
                             value += 0.15
 
                 elif stack[1] == opponent_col:
                     step = 1 if stack[0] > opponent_row else -1
-                    for block in range(opponent_row + step, stack[0] - step, step):
+                    for block in range(opponent_row + step, stack[0], step):
                         if lord_grid[block][opponent_col] != -1:
                             value += 0.15
 
@@ -247,11 +246,13 @@ class ImprovedMinimaxStacPlayer(StacPlayer):
 
         if result == StacResult.WIN:
             for play in self.match:
-                flag = check_play(play.split('$'))
+                if play not in history_plays:
+                    flag = check_play(play.split('$'))
 
-                if play not in history_plays and flag:
-                    add_history(self.path, play)
-                    history_plays.append(play)
+                    if flag:
+                        add_history(self.path, play)
+                        history_plays.append(play)
 
         self.history = read_file(self.path)
+        self.match = []
 
