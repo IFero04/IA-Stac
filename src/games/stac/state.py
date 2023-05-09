@@ -11,7 +11,7 @@ class StacState(State):
     EMPTY_CELL = -1
     START_CELL = 1
 
-    def __init__(self, display_game: bool):
+    def __init__(self):
         super().__init__()
         """
         the dimensions of the board
@@ -35,7 +35,6 @@ class StacState(State):
         """
         the display
         """
-        self.__display_game = display_game
         self.__board = StacDisplay()
         """
         counts the number of turns in the current games
@@ -57,10 +56,6 @@ class StacState(State):
         Draw Counter
         """
         self.__draw_counter = 0
-        """
-        First Tower
-        """
-        self.__first_tower = None
 
     def count_draw(self):
         tokens_in_game = 0
@@ -183,7 +178,7 @@ class StacState(State):
         return False
 
     def __is_full(self):
-        if self.__turns_count < 100 and self.__draw_counter < 25:
+        if self.__turns_count < 75 and self.__draw_counter < 10:
             for row in range(self.__num_rows):
                 for col in range(self.__num_cols):
                     if self.__grid[row][col] == 1:
@@ -221,15 +216,14 @@ class StacState(State):
         return self.__acting_player
 
     def clone(self):
-        cloned_state = StacState(False)
+        cloned_state = StacState()
         cloned_state.__turns_count = self.__turns_count
+        cloned_state.__draw_counter = self.__draw_counter
         cloned_state.__acting_player = self.__acting_player
         cloned_state.__has_winner = self.__has_winner
+        cloned_state.__winner = self.__winner
         cloned_state.__can_move[0] = self.__can_move[0]
         cloned_state.__can_move[1] = self.__can_move[1]
-        cloned_state.__has_winner = self.__has_winner
-        cloned_state.__winner = self.__winner
-        cloned_state.__first_tower = self.__first_tower
         for row in range(0, self.__num_rows):
             for col in range(0, self.__num_cols):
                 cloned_state.__grid[row][col] = self.__grid[row][col]
@@ -263,9 +257,6 @@ class StacState(State):
 
     def get_winner(self):
         return self.__winner
-
-    def get_first_tower(self):
-        return self.__first_tower
 
     def set_grid(self, grid):
         self.__grid = grid

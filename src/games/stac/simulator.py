@@ -9,7 +9,7 @@ class StacSimulator(GameSimulator):
         super(StacSimulator, self).__init__([player1, player2], self.display_game)
 
     def init_game(self):
-        return StacState(self.display_game)
+        return StacState()
 
     def before_end_game(self, state: StacState):
         # ignored for this simulator
