@@ -48,7 +48,7 @@ def str_to_state(str_state):
         lord_grid = literal_eval(match.group(3))
         can_move = literal_eval(match.group(4))
 
-        state = StacState(True)
+        state = StacState()
         state.set_grid(grid)
         state.set_lord_grid(lord_grid)
 
